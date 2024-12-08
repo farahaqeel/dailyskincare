@@ -1,7 +1,6 @@
-import 'package:dailyskincare/screens/auth_services.dart';
-import 'package:dailyskincare/widget/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
-
+import 'package:dailyskincare/screens/sign_in.dart';
+import 'package:dailyskincare/screens/sign_up.dart';
 
 void main() {
   runApp(const GetStarted());
@@ -24,18 +23,14 @@ class GetStartedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(''), // Kosongkan title untuk AppBar atau tambahkan logo kecil jika diperlukan
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Membuat seluruh item berada di tengah secara vertikal
-          crossAxisAlignment: CrossAxisAlignment.center, // Membuat item berada di tengah secara horizontal
-          children: <Widget>[
+          mainAxisAlignment: MainAxisAlignment.center, // Pusatkan konten secara vertikal
+          children: [
             Image.asset(
-              'assets/logo.png',
-              height: 80, // Sesuaikan ukuran gambar
+              'assets/logo.png', // Ganti dengan path logo Anda
+              height: 100, // Sesuaikan ukuran logo
             ),
             const SizedBox(height: 20),
             const Text(
@@ -44,8 +39,10 @@ class GetStartedPage extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center, // Menjaga agar teks berada di tengah
+              textAlign: TextAlign.center,
             ),
+
+
             const SizedBox(height: 20),
             const Text(
               'Your personalized skincare routine starts here. Follow these steps to get started:',
@@ -53,8 +50,8 @@ class GetStartedPage extends StatelessWidget {
               textAlign: TextAlign.center, // Menjaga agar teks berada di tengah
             ),
             const SizedBox(height: 20),
-            
-            // Modifikasi ListTile untuk di tengah
+
+              // Modifikasi ListTile untuk di tengah
             const Align(
               alignment: Alignment.center, // Memusatkan ListTile
               child: Row(
@@ -66,6 +63,7 @@ class GetStartedPage extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
             const Align(
               alignment: Alignment.center, // Memusatkan ListTile
@@ -78,6 +76,7 @@ class GetStartedPage extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
             const Align(
               alignment: Alignment.center, // Memusatkan ListTile
@@ -90,31 +89,53 @@ class GetStartedPage extends StatelessWidget {
                 ],
               ),
             ),
-            
-            const Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  await AuthServices.signInAnonymously();
-                  // Navigate to next page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MotionTabBarPage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Mengubah bentuk menjadi kotak dengan ujung tumpul
+
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Aksi tombol Sign Up
+                    Navigator.push(
+                      context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignUpPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 127, 1, 139),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                  backgroundColor: const Color.fromARGB(255, 246, 215, 252),
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 127, 1, 139), // Mengubah warna teks menjadi ungu
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Aksi tombol Sign In
+                    Navigator.push(
+                      context,
+                    MaterialPageRoute(builder: (context) => const SignInPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 127, 1, 139),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Sign In',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

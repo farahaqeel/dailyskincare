@@ -28,8 +28,8 @@ class MotionTabBarPage extends StatelessWidget {
       bottomNavigationBar: MotionTabBar(
         labels: const ["Beranda", "Daftar-List", "Notifikasi"],
         initialSelectedTab: "Beranda",
-        tabIconColor:  Color.fromARGB(255, 127, 1, 139),
-        tabSelectedColor: Color.fromARGB(255, 127, 1, 139),
+        tabIconColor:  const Color.fromARGB(255, 127, 1, 139),
+        tabSelectedColor: const Color.fromARGB(255, 127, 1, 139),
         icons: const [Icons.home, Icons.list, Icons.notifications],
         textStyle: const TextStyle(color: Color.fromARGB(255, 127, 1, 139)),
         onTabItemSelected: (index) {

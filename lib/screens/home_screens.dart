@@ -1,7 +1,10 @@
+// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
 import 'package:intl/intl.dart';
+
 
 // void main() {
 //   runApp(const MyApp());
@@ -66,6 +69,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       length: 3,
       vsync: this,
     );
+
+    final uid = FirebaseAuth.instance.currentUser;
+    print('Current User UID: $uid');
   }
 
   @override
@@ -110,7 +116,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         onDateChanged: (value) => (value),
         firstDate: DateTime.now().subtract(const Duration(days: 140)),
         lastDate: DateTime.now(),
-        accent: const Color.fromARGB(255, 195, 3, 229),
+        accent: const Color.fromARGB(255, 127, 1, 139),
         backButton: false,
         locale: 'id_ID', // Set locale for CalendarAppBar
       ),

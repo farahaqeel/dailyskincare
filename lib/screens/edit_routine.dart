@@ -1,15 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:day_picker/day_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddRoutinePage extends StatefulWidget {
+class EditRoutinePage extends StatefulWidget {
+  final String routineId;
+
+  const EditRoutinePage({Key? key, required this.routineId}) : super(key: key);
+
   @override
-  _AddRoutinePageState createState() => _AddRoutinePageState();
+  _EditRoutinePageState createState() => _EditRoutinePageState();
 }
 
-class _AddRoutinePageState extends State<AddRoutinePage> {
-  final _formKey = GlobalKey<FormState>();
+
+class _EditRoutinePageState extends State<EditRoutinePage>{
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? _user = FirebaseAuth.instance.currentUser;
 
@@ -19,8 +24,8 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
   List<String> _selectedDays = [];
 
   final List<String> _periodOptions = ['Pagi', 'Siang', 'Malam'];
-  
-  final List<CustomDayInWeek> _days = [
+
+   final List<CustomDayInWeek> _days = [
     CustomDayInWeek("Sen", dayKey: "monday"),
     CustomDayInWeek("Sel", dayKey: "tuesday"),
     CustomDayInWeek("Rab", dayKey: "wednesday"),
@@ -30,44 +35,46 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
     CustomDayInWeek("Min", dayKey: "sunday"),
   ];
 
-  Future<void> _addRoutine() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+  Future<void> _editRoutine(String routineId) async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
 
-      if (_user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User not logged in')),
-        );
-        return;
-      }
+    if (_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in')),
+      );
+      return;
+    }
 
-      try {
-        await _firestore
-            .collection('users')
-            .doc(_user.uid)
-            .collection('incompleteRoutines')
-            .add({
-          'title': _activityName,
-          'period': _selectedPeriod ?? 'Custom',
-          'time': {
-            'hour': _selectedTime.hour, 
-            'minute': _selectedTime.minute
-          },
-          'days': _selectedDays.join(', '),
-        });
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_user.uid)
+          .collection('incompleteRoutines')
+          .doc(routineId) // ID dokumen untuk edit
+          .update({
+        'title': _activityName,
+        'period': _selectedPeriod ?? 'Custom',
+        'time': {
+          'hour': _selectedTime.hour,
+          'minute': _selectedTime.minute,
+        },
+        'days': _selectedDays.join(', '),
+      });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Routine added successfully')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Routine updated successfully')),
+      );
 
-        Navigator.of(context).pop(); // Return to previous screen
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding routine: $e')),
-        );
-      }
+      Navigator.of(context).pop(); // Kembali ke layar sebelumnya
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating routine: $e')),
+      );
     }
   }
+}
+
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -95,21 +102,15 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
   }
 
   @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Tambah Rutinitas',
+            'Edit Rutinitas',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: const Color.fromARGB(255, 195, 3, 229),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            color: const Color.fromARGB(255, 250, 246, 246),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
         ),
 
         // Wrap the entire body in SingleChildScrollView
@@ -262,7 +263,9 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
 
                   Center(
                     child: ElevatedButton(
-                      onPressed: _addRoutine,
+                      onPressed: () {
+                        _editRoutine(widget.routineId); // Memanggil fungsi dengan ID dokumen
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
