@@ -63,9 +63,6 @@ class _ToDoListPageState extends State<ToDoListPage>
 }
 
 
-
-
-
   Stream<QuerySnapshot<Map<String, dynamic>>> _getRoutines(bool isComplete) {
     return _firestore
         .collection('users')

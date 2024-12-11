@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_appbar/calendar_appbar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 // void main() {
@@ -32,6 +33,34 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   MotionTabBarController? _motionTabBarController;
+  Stream<List<Map<String, dynamic>>> _getRoutinesFromFirestore() async* {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+
+  if (uid != null) {
+    final completeRoutines = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('completeRoutines')
+        .snapshots();
+
+    final incompleteRoutines = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('incompleteRoutines')
+        .snapshots();
+
+    await for (final completeSnapshot in completeRoutines) {
+      final completeData = completeSnapshot.docs.map((doc) => doc.data()).toList();
+
+      await for (final incompleteSnapshot in incompleteRoutines) {
+        final incompleteData = incompleteSnapshot.docs.map((doc) => doc.data()).toList();
+
+        yield [...completeData, ...incompleteData];
+      }
+    }
+  }
+}
+
 
   // Sample routine data with a 'checked' state
   final List<Map<String, dynamic>> routines = [
@@ -194,3 +223,4 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 }
+
