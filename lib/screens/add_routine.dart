@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddRoutinePage extends StatefulWidget {
+  const AddRoutinePage({super.key});
+
   @override
   _AddRoutinePageState createState() => _AddRoutinePageState();
 }
@@ -36,7 +38,7 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
 
       if (_user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User not logged in')),
+          const SnackBar(content: Text('User not logged in')),
         );
         return;
       }
@@ -57,7 +59,7 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Routine added successfully')),
+          const SnackBar(content: Text('Routine added successfully')),
         );
 
         Navigator.of(context).pop(); // Return to previous screen
@@ -85,11 +87,11 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
     setState(() {
       _selectedPeriod = value;
       if (value == 'Pagi') {
-        _selectedTime = TimeOfDay(hour: 8, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 8, minute: 0);
       } else if (value == 'Siang') {
-        _selectedTime = TimeOfDay(hour: 12, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 12, minute: 0);
       } else if (value == 'Malam') {
-        _selectedTime = TimeOfDay(hour: 20, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 20, minute: 0);
       }
     });
   }
@@ -102,7 +104,7 @@ class _AddRoutinePageState extends State<AddRoutinePage> {
             'Tambah Rutinitas',
             style: TextStyle(color: Colors.white),
           ),
-          backgroundColor: const Color.fromARGB(255, 195, 3, 229),
+          backgroundColor: const Color.fromARGB(255, 127, 1, 139),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             color: const Color.fromARGB(255, 250, 246, 246),

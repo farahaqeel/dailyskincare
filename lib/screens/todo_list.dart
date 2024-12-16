@@ -36,7 +36,7 @@ class _ToDoListPageState extends State<ToDoListPage>
   Future<void> _editRoutine(String docId, bool isComplete, Map<String, dynamic> updatedData) async {
   if (_user == null) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('User not logged in')),
+      const SnackBar(content: Text('User not logged in')),
     );
     return;
   }
@@ -51,7 +51,7 @@ class _ToDoListPageState extends State<ToDoListPage>
         .update(updatedData);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Routine updated successfully')),
+      const SnackBar(content: Text('Routine updated successfully')),
     );
 
     Navigator.of(context).pop(); // Kembali ke layar sebelumnya
@@ -150,7 +150,7 @@ class _ToDoListPageState extends State<ToDoListPage>
           "Daftar List Rutinitas",
           style: TextStyle(color: Color.fromARGB(255, 253, 252, 253)),
         ),
-        backgroundColor: const Color.fromARGB(255, 195, 3, 229),
+        backgroundColor: const Color.fromARGB(255, 127, 1, 139),
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
@@ -179,7 +179,7 @@ class _ToDoListPageState extends State<ToDoListPage>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddRoutinePage(),
+                      builder: (context) => const AddRoutinePage(),
                     ),
                   );
                 },

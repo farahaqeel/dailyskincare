@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '155642764344',
     projectId: 'dailyskincare-38173',
     storageBucket: 'dailyskincare-38173.firebasestorage.app',
-    iosBundleId: 'com.example.dailyskincare',
+    iosBundleId: 'com.app.dailyskincare',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '155642764344',
     projectId: 'dailyskincare-38173',
     storageBucket: 'dailyskincare-38173.firebasestorage.app',
-    iosBundleId: 'com.example.dailyskincare',
+    iosBundleId: 'com.app.dailyskincare',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

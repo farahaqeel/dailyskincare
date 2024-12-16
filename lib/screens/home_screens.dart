@@ -15,7 +15,11 @@ class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? _user = FirebaseAuth.instance.currentUser;
 
-  DateTime _selectedDate = DateTime.now(); // Track selected date
+ DateTime _selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );// Track selected date
 
   // Helper function to format time
   String formatTime(Map<String, dynamic> timeData) {
@@ -67,26 +71,47 @@ class _HomePageState extends State<HomePage> {
         .snapshots();
 
     return completeStream.asyncMap((completeSnapshot) async {
+
       final incompleteSnapshot = await incompleteStream.first;
+
       final allRoutines = [
         ...completeSnapshot.docs,
         ...incompleteSnapshot.docs
       ];
 
-      // Filter routines based on the selected date
-      return allRoutines.where((routineDoc) {
+    return allRoutines.where((routineDoc) { 
         final data = routineDoc.data();
-        final days = data['days'] is List<dynamic>
-            ? (data['days'] as List<dynamic>)
-                .map<String>((day) => convertToIndonesianDay(day as String))
-                .toList()
-            : [convertToIndonesianDay(data['days'] as String)];
 
-        // Check if the selected date matches any of the routine days
-        return days.contains(DateFormat('EEEE', 'id_ID').format(_selectedDate));
+        final days = data['days'];
+        if (days == null) {
+          return false;
+        }
+
+        // Convert database days to Indonesian day names
+        final daysList = (days is List)
+            ? days
+                .map((day) =>
+                    convertToIndonesianDay(day.toString().toLowerCase()))
+                .toList()
+            : days
+                .toString()
+                .split(',')
+                .map((day) => convertToIndonesianDay(day.trim().toLowerCase()))
+                .toList();
+
+        // Get the selected day in Indonesian
+        final selectedDay = convertToIndonesianDay(
+            DateFormat('EEEE', 'en_US').format(_selectedDate).toLowerCase());
+
+        // Compare using case-insensitive match
+        final containsDay = daysList
+            .any((day) => day.toLowerCase() == selectedDay.toLowerCase());
+
+        return containsDay;
       }).toList();
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -118,40 +143,41 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: StreamBuilder<
-                List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+            child: StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
               stream: _getAllRoutines(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  print("Loading data...");
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  print("No routines found.");
                   return const Center(child: Text('Tidak ada rutinitas.'));
                 }
 
                 final routines = snapshot.data!;
+                print("Displaying ${routines.length} routines.");
 
                 return ListView.builder(
                   itemCount: routines.length,
                   itemBuilder: (context, index) {
                     final data = routines[index].data();
+                    print("Routine #$index: $data");
+
                     final time = data['time'] as Map<String, dynamic>? ?? {};
-                    final isComplete = data['isComplete'] as bool? ??
-                        false; // Default ke false
+                    final isComplete = data['isComplete'] as bool? ?? false;
 
                     final daysInIndonesian = data['days'] is List<dynamic>
                         ? (data['days'] as List<dynamic>)
-                            .map<String>(
-                                (day) => convertToIndonesianDay(day as String))
+                            .map<String>((day) => convertToIndonesianDay(day as String))
                             .toList()
                         : data['days'] is String
                             ? [convertToIndonesianDay(data['days'] as String)]
                             : [];
 
                     return Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 246, 215, 252),
@@ -170,36 +196,51 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('${data['title']} - ${data['period']}'),
-                            Checkbox(
-                              value: isComplete,
-                              onChanged: (bool? value) async {
-                                if (value == null || _user == null) return;
+                      Checkbox(
+                          value: isComplete, // Gunakan isComplete untuk mencerminkan status
+                          onChanged: (bool? value) async {
+                            if (value == null || _user == null) return;
 
-                                final routineDoc = _firestore
-                                    .collection('users')
-                                    .doc(_user.uid)
-                                    .collection('incompleteRoutines')
-                                    .doc(routines[index].id);
+                            final routineId = routines[index].id;
 
-                                if (value) {
-                                  // Pindahkan dokumen ke completeRoutines
-                                  final routineData = await routineDoc.get();
-                                  await _firestore
-                                      .collection('users')
-                                      .doc(_user.uid)
-                                      .collection('completeRoutines')
-                                      .doc(routines[index].id)
-                                      .set(routineData.data()!);
+                            // Perbarui nilai lokal
+                            setState(() {
+                              data['isComplete'] = value;
+                            });
 
-                                  // Hapus dari incompleteRoutines
-                                  await routineDoc.delete();
-                                } else {
-                                  // Update isComplete jika dibatalkan
-                                  await routineDoc
-                                      .update({'isComplete': value});
-                                }
-                              },
-                            ),
+                            // Perbarui di Firestore
+                            if (value) {
+                              // Pindahkan ke 'completeRoutines'
+                              await _firestore
+                                  .collection('users')
+                                  .doc(_user.uid)
+                                  .collection('completeRoutines')
+                                  .doc(routineId)
+                                  .set({...data, 'isComplete': true}); // Perbarui isComplete menjadi true
+                              await _firestore
+                                  .collection('users')
+                                  .doc(_user.uid)
+                                  .collection('incompleteRoutines')
+                                  .doc(routineId)
+                                  .delete(); // Hapus dari 'incompleteRoutines'
+                            } else {
+                              // Pindahkan ke 'incompleteRoutines'
+                              await _firestore
+                                  .collection('users')
+                                  .doc(_user.uid)
+                                  .collection('incompleteRoutines')
+                                  .doc(routineId)
+                                  .set({...data, 'isComplete': false}); // Perbarui isComplete menjadi false
+                              await _firestore
+                                  .collection('users')
+                                  .doc(_user.uid)
+                                  .collection('completeRoutines')
+                                  .doc(routineId)
+                                  .delete(); // Hapus dari 'completeRoutines'
+                            }
+                          },
+                        ),
+
                           ],
                         ),
                         subtitle: Text(

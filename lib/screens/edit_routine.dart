@@ -41,7 +41,7 @@ class _EditRoutinePageState extends State<EditRoutinePage>{
 
     if (_user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User not logged in')),
+        const SnackBar(content: Text('User not logged in')),
       );
       return;
     }
@@ -63,7 +63,7 @@ class _EditRoutinePageState extends State<EditRoutinePage>{
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Routine updated successfully')),
+        const SnackBar(content: Text('Routine updated successfully')),
       );
 
       Navigator.of(context).pop(); // Kembali ke layar sebelumnya
@@ -92,11 +92,11 @@ class _EditRoutinePageState extends State<EditRoutinePage>{
     setState(() {
       _selectedPeriod = value;
       if (value == 'Pagi') {
-        _selectedTime = TimeOfDay(hour: 8, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 8, minute: 0);
       } else if (value == 'Siang') {
-        _selectedTime = TimeOfDay(hour: 12, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 12, minute: 0);
       } else if (value == 'Malam') {
-        _selectedTime = TimeOfDay(hour: 20, minute: 0);
+        _selectedTime = const TimeOfDay(hour: 20, minute: 0);
       }
     });
   }
@@ -110,7 +110,7 @@ class _EditRoutinePageState extends State<EditRoutinePage>{
             'Edit Rutinitas',
             style: TextStyle(color: Colors.white),
           ),
-          backgroundColor: const Color.fromARGB(255, 195, 3, 229),
+          backgroundColor: const Color.fromARGB(255, 127, 1, 139),
         ),
 
         // Wrap the entire body in SingleChildScrollView

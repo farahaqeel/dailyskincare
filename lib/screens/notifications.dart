@@ -179,7 +179,7 @@ class _NotificationPageState extends State<NotificationPage> {
           "Notifikasi",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color.fromARGB(255, 195, 3, 229),
+        backgroundColor: const Color.fromARGB(255, 127, 1, 139),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
